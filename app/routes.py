@@ -1,7 +1,7 @@
 from app import app
 from flask import request
-import pwd
-import grp
+import pwd2
+import grp2
 import json 
 
 def fill_user(user):
@@ -22,7 +22,7 @@ def fill_group(group):
    return group_dict
 
 def get_all_groups():
-   all_groups = grp.getgrall()
+   all_groups = grp2.getgrall()
    group_list = []
    for group in all_groups:
       group_dict = fill_group(group)
@@ -43,7 +43,7 @@ def handle_keyerror(e):
 
 @app.route('/users')
 def get_users():
-   all_users = pwd.getpwall()
+   all_users = pwd2.getpwall()
    user_list = []
    for user in all_users:
       user_dict = fill_user(user)
@@ -58,7 +58,7 @@ def get_matching_users():
    comment = request.args.get('comment', type=str)
    home = request.args.get('home', type=str)
    shell = request.args.get('shell', type=str)
-   all_users = pwd.getpwall()
+   all_users = pwd2.getpwall()
    user_list = []
    for user in all_users:
       if name and name != user.pw_name:
@@ -79,13 +79,13 @@ def get_matching_users():
    
 @app.route('/users/<int:uid>')
 def get_user(uid):
-   user = pwd.getpwuid(uid)
+   user = pwd2.getpwuid(uid)
    user_dict = fill_user(user) 
    return json.dumps(user_dict) 
 
 @app.route('/users/<int:uid>/groups')
 def get_user_groups(uid):
-   user = pwd.getpwuid(uid)
+   user = pwd2.getpwuid(uid)
    member_set = { user.pw_name }
    group_list = get_matching_members(member_set)
    return ('[\n  ' + ',\n  '.join(map(json.dumps,group_list)) + '\n]')
@@ -112,6 +112,6 @@ def get_matching_groups():
 
 @app.route('/groups/<int:gid>')
 def get_group(gid):
-   group = grp.getgrgid(gid)
+   group = grp2.getgrgid(gid)
    group_dict = fill_group(group) 
    return json.dumps(group_dict) 
